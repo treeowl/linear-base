@@ -23,6 +23,7 @@ import GHC.Types (Multiplicity (..))
 import Generics.Linear
 import Prelude.Linear.GenericUtil
 import qualified Prelude
+import qualified Control.Monad.Fix as MFix
 
 -- | @Ur a@ represents unrestricted values of type @a@ in a linear
 -- context. The key idea is that because the contructor holds @a@ with a
@@ -35,8 +36,13 @@ data Ur a where
   Ur :: a -> Ur a
 
 deriving instance GHCGen.Generic (Ur a)
-
 deriving instance GHCGen.Generic1 Ur
+deriving instance Prelude.Show a => Prelude.Show (Ur a)
+deriving instance Prelude.Read a => Prelude.Read (Ur a)
+deriving instance Prelude.Eq a => Prelude.Eq (Ur a)
+deriving instance Prelude.Ord a => Prelude.Ord (Ur a)
+instance MFix.MonadFix Ur where
+  mfix f = let r = f (unur r) in r
 
 -- | Get an @a@ out of an @Ur a@. If you call this function on a
 -- linearly bound @Ur a@, then the @a@ you get out has to be used
